@@ -6,7 +6,7 @@
 #include <conio.h>
 using namespace std;
 
-#define SIZE 2
+#define SIZE 3
 #define MAXNUMBER 5
 #define MINNUMBER 0
  
@@ -60,8 +60,6 @@ void multiply(double** a, double**b){
 }
 
 
-
-
 int main(){
     // creations of the 2 random matrices 
     double** matrixA = create_Matrix(1);
@@ -74,7 +72,6 @@ int main(){
     
     cout << "\nA*B";
     multiply(matrixA,matrixB);
-    
-    
+       
     return 0;
 }
