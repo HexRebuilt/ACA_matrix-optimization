@@ -7,6 +7,8 @@
 using namespace std;
 
 #define SIZE 2
+#define MAXNUMBER 5
+#define MINNUMBER 0
  
 void showMatrix(double** matrix){
     cout << "\n";
@@ -19,15 +21,14 @@ void showMatrix(double** matrix){
     }
 }
 
-double** create_Matrix ()
-{
+double** create_Matrix (){
     double** random = new double*[SIZE];
     for (int i=0; i< SIZE; i++){
         random[i] = new double [SIZE];
     }
 
     int i, j;
-    int max = 100, min = 0, range = max-min;
+    int max = MAXNUMBER, min = MINNUMBER, range = max-min;
     srand(time(NULL)); 
 
     for(i = 0; i <SIZE; i++)
@@ -84,18 +85,6 @@ double determinant( double** matrix, int n) {
    return det;
 }
 
-void matrixInversion(double** matrix){
-    double** a = new double*[SIZE];
-    for (int i=0; i< SIZE; i++){
-        a[i] = new double [SIZE];
-    }
-    for(int i = 0; i < SIZE; i++)
-        for(int j = 0; i < SIZE; i++)
-            a[i][j] = 0;
-    
-    double det = determinant(matrix,SIZE);
-
-}
 
 
 int main(){
