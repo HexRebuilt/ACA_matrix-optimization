@@ -21,16 +21,17 @@ void showMatrix(double** matrix){
     }
 }
 
-double** create_Matrix (){
+double** create_Matrix (int number){
     double** random = new double*[SIZE];
     for (int i=0; i< SIZE; i++){
         random[i] = new double [SIZE];
+        //random[i] = 0;
     }
 
     int i, j;
-    int max = MAXNUMBER, min = MINNUMBER, range = max-min;
-    srand(time(NULL)); 
-
+    int range = MAXNUMBER - MINNUMBER;
+    srand(static_cast<unsigned>(time(0))+number); 
+    //srand(time(NULL));
     for(i = 0; i <SIZE; i++)
         for(j = 0; j< SIZE; j++)
             random[i][j] = rand() %(range);
@@ -58,39 +59,13 @@ void multiply(double** a, double**b){
     showMatrix(results);
 }
 
-double determinant( double** matrix, int n) {   
-   double det = 0;
-   double** submatrix = new double*[n];
-    for (int i=0; i< n; i++){
-        submatrix[i] = new double [n];
-    }
-    for(int i = 0; i < n; i++)
-        for(int j = 0; i < n; i++)
-            submatrix[i][j] = 0;
-
-    for (int x = 0; x < n; x++) {
-        int subi = 0; 
-        for (int i = 1; i < n; i++) {
-            int subj = 0;
-            for (int j = 0; j < n; j++) {
-                if (j == x)
-                continue;
-                submatrix[subi][subj] = matrix[i][j];
-                subj++;
-            }
-            subi++;
-        }
-        det = det + (pow(-1, x) * matrix[0][x] * determinant( submatrix, n - 1 ));
-    }
-   return det;
-}
 
 
 
 int main(){
     // creations of the 2 random matrices 
-    double** matrixA = create_Matrix();
-    double** matrixB = create_Matrix();
+    double** matrixA = create_Matrix(1);
+    double** matrixB = create_Matrix(2);
 
     cout << "\nMatrix A:";
     showMatrix(matrixA);
@@ -100,14 +75,6 @@ int main(){
     cout << "\nA*B";
     multiply(matrixA,matrixB);
     
-    cout << "det:A\n";
-    cout << determinant(matrixA,SIZE);
-    /*
-    cout << "\nInversion matrix A";
-    matrixInversion(matrixA);
-
-    cout << "\nInversion matrix B";
-    matrixInversion(matrixB);
-    */
+    
     return 0;
 }
