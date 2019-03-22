@@ -6,7 +6,7 @@
 #include <conio.h>
 
 using namespace std;
-#define SIZE 10
+#define SIZE 4
 #define MAXNUMBER 90
 #define MINNUMBER 0
  
@@ -134,7 +134,7 @@ void inverse(float a[SIZE][SIZE],float d[SIZE][SIZE],int n,float det){
 		cofactor(a,d,n,det);	// read function
 }// end function
 
-void lu(float a[][10], float l[][10], float u[][10], int n){
+void lu(float a[SIZE][SIZE], float l[SIZE][SIZE], float u[SIZE][SIZE], int n){
 
     int i = 0, j = 0, k = 0;
 
@@ -165,6 +165,32 @@ void lu(float a[][10], float l[][10], float u[][10], int n){
     }
 }
 
+void pivot(float a[SIZE][SIZE],float ap[SIZE][SIZE],float b[SIZE][SIZE]){
+	//trovo il massimo di a[1][*] e inverto le righe
+	int imax=0;
+	for(int i = 0; i < SIZE; i++)
+	{
+		if (a[i][0]>a[imax][0]) {
+			imax=i;
+			cout<<"\n i max:"<<imax;
+		}
+	}
+	float p[SIZE][SIZE];
+	//swappo le righe
+	for (int k =0; k < SIZE; k++){
+		ap[0][k] = a[imax][k];
+		ap[imax][k] = a[0][k];
+		p[0][k] = b[imax][k];
+		p[imax][k] = b[0][k];
+	}
+	/*
+	cout<<"\nAp";
+	showMatrix(ap);
+	cout<<"\np";
+	showMatrix(p);
+*/
+}
+
 void luInversion(float a[SIZE][SIZE]){
     float l[SIZE][SIZE], u[SIZE][SIZE], y[SIZE][SIZE], x[SIZE][SIZE];
     int i = 0, j = 0;
@@ -174,10 +200,12 @@ void luInversion(float a[SIZE][SIZE]){
     for (int i = 0; i < SIZE; i++){
         b[i][i] = 1; //creating the identity matrix
     } 
-    //forwardsubstitution(l,b,y);
-    //backwardsubstitution(u,y,x);
+	float ap [SIZE][SIZE];
+	for(int i = 0; i< SIZE; i++)
+		for(int j=0; j< SIZE; j++)
+			ap[i][j] = a[i][j];
 
-
+	pivot(a,ap,b);
 }
 
 //---------------------------------------------------
