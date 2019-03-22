@@ -134,6 +134,52 @@ void inverse(float a[SIZE][SIZE],float d[SIZE][SIZE],int n,float det){
 		cofactor(a,d,n,det);	// read function
 }// end function
 
+void lu(float a[][10], float l[][10], float u[][10], int n){
+
+    int i = 0, j = 0, k = 0;
+
+    for (i = 0; i < n; i++){
+        for (j = 0; j < n; j++){
+            if (j < i)
+                l[j][i] = 0;
+            else{
+                l[j][i] = a[j][i];
+                for (k = 0; k < i; k++)
+                {
+                    l[j][i] = l[j][i] - l[j][k] * u[k][i];
+                }
+            }
+        }
+        for (j = 0; j < n; j++){
+            if (j < i)
+                u[i][j] = 0;
+            else if (j == i)
+                u[i][j] = 1;
+            else{
+                u[i][j] = a[i][j] / l[i][i];
+                for (k = 0; k < i; k++)                {
+                    u[i][j] = u[i][j] - ((l[i][k] * u[k][j]) / l[i][i]);
+                }
+            }
+        }
+    }
+}
+
+void luInversion(float a[SIZE][SIZE]){
+    float l[SIZE][SIZE], u[SIZE][SIZE], y[SIZE][SIZE], x[SIZE][SIZE];
+    int i = 0, j = 0;
+    lu(a, l, u, SIZE);
+  
+    float b[SIZE][SIZE];
+    for (int i = 0; i < SIZE; i++){
+        b[i][i] = 1; //creating the identity matrix
+    } 
+    //forwardsubstitution(l,b,y);
+    //backwardsubstitution(u,y,x);
+
+
+}
+
 //---------------------------------------------------
 //main fuction exe
 int main(void){
@@ -154,7 +200,7 @@ int main(void){
     cout<< "\n\nA * B =\n";
     multiply(a,b);
 
-
+/*
     cout<<"\n\nInversion of the Matrix A: ";
 	if(deterA != 0){
 	    inverse(a,at,n,deterA);	// read function
@@ -172,13 +218,11 @@ int main(void){
     else{
         cout<<"\nInverse of Entered Matrix is not possible\n";
     }
+*/
+    cout << "\n\nVerify LU method";
+    luInversion(a);
 
-    /*cout << "\n\nVerify A': A * A' = I";
-    multiply(a,at);
 
-    cout << "\n\nVerify B': B * B' = I";
-    multiply(b,bt);
-    */
     
     return 0;
 }
