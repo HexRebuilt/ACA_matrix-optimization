@@ -7,7 +7,7 @@
 
 using namespace std;
 #define SIZE 4
-#define MAXNUMBER 90
+#define MAXNUMBER 10
 #define MINNUMBER 0
  
 void showMatrix(float matrix[SIZE][SIZE]){
@@ -165,38 +165,62 @@ void lu(float a[SIZE][SIZE], float l[SIZE][SIZE], float u[SIZE][SIZE], int n){
     }
 }
 
-void pivot(float a[SIZE][SIZE],float ap[SIZE][SIZE],float b[SIZE][SIZE]){
-	//trovo il massimo di a[1][*] e inverto le righe
-	int imax=0;
-	for(int i = 0; i < SIZE; i++)
+int findImax(float a[SIZE][SIZE], int column){
+    int imax=column;
+	for(int i = column; i < SIZE; i++)
 	{
-		if (a[i][0]>a[imax][0]) {
+		if (a[i][column]>a[imax][column]) {
 			imax=i;
 			cout<<"\n i max:"<<imax;
 		}
 	}
-	float p[SIZE][SIZE];
-	//swappo le righe
+    return imax;
+}
+
+void swapRows(float a[SIZE][SIZE], float ap[SIZE][SIZE], float b[SIZE][SIZE], int imax, int column){
+    //swappo le righe per il primo passaggio
 	for (int k =0; k < SIZE; k++){
-		ap[0][k] = a[imax][k];
-		ap[imax][k] = a[0][k];
-		p[0][k] = b[imax][k];
-		p[imax][k] = b[0][k];
+		ap[column][k] = a[imax][k];
+		ap[imax][k] = a[column][k];
+		float tmp = b[imax][k];
+		b[imax][k] = b[column][k];
+        b[column][k] = tmp;
 	}
-	/*
-	cout<<"\nAp";
-	showMatrix(ap);
-	cout<<"\np";
-	showMatrix(p);
-*/
+}
+
+void triangularize(float a[SIZE][SIZE], float b[SIZE][SIZE],int row){
+    float number;
+    for(int j = 0; j < SIZE; j++)
+    {
+        
+    }
+    
+
+
+}
+
+void pivoting(float a[SIZE][SIZE],float ap[SIZE][SIZE],float b[SIZE][SIZE]){
+	for(int i = 0; i < SIZE; i++){
+        int imax = findImax(a,i);
+        //cout <<"\nbefore row inversion a:";
+        //showMatrix(a);
+        cout <<"\nafter inversion ap: ";
+        //showMatrix(ap);
+        //swapRows(a,ap,b,imax,i);
+        if(i > 0){
+            triangularize(a,b,i);
+        }
+
+    }
+	
 }
 
 void luInversion(float a[SIZE][SIZE]){
     float l[SIZE][SIZE], u[SIZE][SIZE], y[SIZE][SIZE], x[SIZE][SIZE];
     int i = 0, j = 0;
-    lu(a, l, u, SIZE);
+    lu(a, l, u, SIZE); //it modifies the L matrix in order to be lower triangular and the U to be upper tri
   
-    float b[SIZE][SIZE];
+    float b[SIZE][SIZE]= {0};
     for (int i = 0; i < SIZE; i++){
         b[i][i] = 1; //creating the identity matrix
     } 
@@ -205,11 +229,70 @@ void luInversion(float a[SIZE][SIZE]){
 		for(int j=0; j< SIZE; j++)
 			ap[i][j] = a[i][j];
 
-	pivot(a,ap,b);
+	pivoting(a,ap,b);
 }
 
-//---------------------------------------------------
-//main fuction exe
+/*
+void lu_decomposition(float a[SIZE][SIZE], b[SIZE][SIZE]){
+    int n = SIZE,i,j,k,p;
+    float x[SIZE],factor,pivot,sum,large,temp;
+    
+    printf("performing the forwar elimination....................\n");
+    for(k=1;k<=n-1;k++)
+    {
+                    p=k;
+                    large=abs(a[k][k]);
+                    for(i=k+1;i<=n;i++)
+                    {
+                    if(abs(a[i][k])>large)
+                                    {
+                                    large=abs(a[i][k]);
+                                    p=i;
+                                    }
+                    }
+                    if(p!=k)
+                    {
+                                    for(j=k;j<=n;j++)
+                                    {
+                                    temp=a[p][i];
+                                    a[p][j]=a[k][j];
+                                    a[k][j]=temp;
+                                    temp=b[p];
+                                    b[p]=b[k];
+                                    b[k]=temp;
+                                    }
+                    }
+
+                    for(i=k+1;i<=n;i++)
+                    {
+                    factor=a[i][k]/a[k][k];
+                                    for(j=1;j<=n;j++)
+                                    {
+                                    a[i][j]=a[i][j]-factor*a[k][j];
+                                    }
+                    b[i]=b[i]-factor*b[k];
+                    }
+    }
+        printf("performing the bacward substitution\n");
+        x[n]=b[n]/a[n][n];
+        for(k=n-1;k>=1;k--)
+        {
+        sum=0.00;
+        for(j=k+1;j<=n;j++)
+        {
+        sum=sum+a[k][j]*x[j];
+        }
+        x[k]=(b[k]-sum)/a[k][k];
+        }
+        printf("the values are:\n");
+        for(i=1;i<=n;i++)
+        {
+        printf("%f\t",x[i]);
+        }
+}
+*/
+
+
 int main(void){
 	int i,j,n = SIZE;
 	float a[SIZE][SIZE], b[SIZE][SIZE], at[SIZE][SIZE], bt[SIZE][SIZE], deterA, deterB;
@@ -249,7 +332,6 @@ int main(void){
 */
     cout << "\n\nVerify LU method";
     luInversion(a);
-
 
     
     return 0;
