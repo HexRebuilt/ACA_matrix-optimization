@@ -50,3 +50,4 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+code/.vscode/ipch/4b97d8ff58133d4e/MATRIX_INVERSE_LUP.ipch
