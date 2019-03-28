@@ -74,71 +74,74 @@ int main(){
   * 'I = inverse(A).A1'. Ideally, 'I' should be a perfect identity matrix. 'I' is
   * used to check the quality of the calculated inverse. The quality increases as
   * we use 'float', 'double', and '__float128', respectively. */
-    sankhya A[N][N], A1[N][N], I[N][N];
+    sankhya A[N+1][N+1], A1[N+1][N+1], I[N+1][N+1];
 
   /* Its i-th row shows the position of '1' in the i-th row of the pivot that is used
   * when performing the LUP decomposition of A. The rest of the elements in that row of
   * the pivot would be zero. In this program, we call this array 'P' a 'permutation'. */
-    int P[N];
+    int P[N+1];
 
-    sankhya B[N][N], X[N], Y[N]; //Temporaty spaces.
-  
-  
+    sankhya B[N+1][N+1], X[N+1], Y[N+1]; //Temporaty spaces.
+
   /* Defining the to-be-inverted matrix, A. A1 would be used later to test the inverted
   * matrix. */
-    for(i =0; i <= N; i++) for(j =0; j <= N; j++)
+    for(i = 1; i <= N; i++) for(j = 1; j <= N; j++)
       A[i][j] = A1[i][j] = sin(i*j*j+i)*2;
 
     printf("\n\nThe to-be-inverted matrix 'A':\n");
-    for(i =0; i <= N; i++){
-      for(j =0; j <= N; j++) printf("\t%E", (float)A[i][j]);
-      printf("\n");
-    }
+    for(i = 1; i <= N; i++)
+      {
+        for(j = 1; j <= N; j++) printf("\t%E", (float)A[i][j]);
+        printf("\n");
+      }
 
   /* Performing LUP-decomposition of the matrix 'A'. If successful, the 'U' is stored in
   * its upper diagonal, and the 'L' is stored in the remaining traigular space. Note that
   * all the diagonal elements of 'L' are 1, which are not stored. */
-    if(LUPdecompose(N, A, P) < 0) return -1;
+    if(LUPdecompose(N+1, A, P) < 0) return -1;
     printf("\n\nThe LUP decomposition of 'A' is successful.\nPivot:\n");
-    for(i =0; i <= N; i++)
+    for(i = 1; i <= N; i++)
         {
-      for(j =0; j <= N; j++) printf("\t%d", j == P[i] ? 1:0);
+      for(j = 1; j <= N; j++) printf("\t%d", j == P[i] ? 1:0);
       printf("\n");
         }
 
     printf("\nLU (where 1. the diagonal of the matrix belongs to 'U', and 2. the\n"\
           "diagonal elements of 'L' are not printed, because they are all 1):\n");
-    for(i =0; i <= N; i++)
+    for(i = 1; i <= N; i++)
       {
-        for(j =0; j <= N; j++) printf("\t%E", (float)A[i][j]);
+        for(j = 1; j <= N; j++) printf("\t%E", (float)A[i][j]);
         printf("\n");
       }
 
   /* Inverting the matrix based on the LUP decomposed A. The inverse is returned through
   * the matrix 'A' itself. */
-    if(LUPinverse(N, P, A, B, X, Y) < 0) return -1;
+    if(LUPinverse(N+1, P, A, B, X, Y) < 0) return -1;
     printf("\n\nMatrix inversion successful.\nInverse of A:\n");
-    for(j =0; j <= N; j++)
+    for(j = 1; j <= N; j++)
         {
-        for(i =0; i <= N; i++) printf("\t%E", (float)A[i][j]);
+        for(i = 1; i <= N; i++) printf("\t%E", (float)A[i][j]);
         printf("\n");
         }
 
   /* Multiplying the inverse-of-A (stored in A) with A (stored in A1). The product is
   * stored in 'I'. Ideally, 'I' should be a perfect identity matrix. */
-    for(i=0; i <= N; i++) for(j =0; j <= N; j++)
-      for(I[i][j] = 0, k =0; k <= N; k++) I[i][j] += A[i][k]*A1[k][j];
+    for(i=1; i <= N; i++) for(j = 1; j <= N; j++)
+      for(I[i][j] = 0, k = 1; k <= N; k++) I[i][j] += A[i][k]*A1[k][j];
 
     printf("\nProduct of the calculated inverse-of-A with A:\n");
-    for(i =0; i <= N; i++)
+    for(i = 1; i <= N; i++)
       {
-        for(j =0; j <= N; j++) printf("\t%E", (float)I[i][j]);
+        for(j = 1; j <= N; j++) printf("\t%E", (float)I[i][j]);
         printf("\n");
       }
     printf("\n");
 
     return 0;
 }
+
+
+
 
 /* This function decomposes the matrix 'A' into L, U, and P. If successful,
  * the L and the U are stored in 'A', and information about the pivot in 'P'.
@@ -149,9 +152,9 @@ static int LUPdecompose(int size, sankhya A[size][size], int P[size])
     sankhya p, t;
 
  /* Finding the pivot of the LUP decomposition. */
-    for(i=0; i<size; i++) P[i] = i; //Initializing.
+    for(i=1; i<size; i++) P[i] = i; //Initializing.
 
-    for(k=0; k<size-1; k++)
+    for(k=1; k<size-1; k++)
        {
         p = 0;
         for(i=k; i<size; i++)
@@ -176,7 +179,7 @@ static int LUPdecompose(int size, sankhya A[size][size], int P[size])
         T = P[kd];
         P[kd] = P[k];
         P[k] = T;
-        for(i=0; i<size; i++)
+        for(i=1; i<size; i++)
             {
              t = A[kd][i];
              A[kd][i] = A[k][i];
@@ -207,37 +210,37 @@ static int LUPinverse(int size, int P[size], sankhya LU[size][size],\
     sankhya t;
 
   //Initializing X and Y.
-    for(n=0; n<size; n++) X[n] = Y[n] = 0;
+    for(n=1; n<size; n++) X[n] = Y[n] = 0;
 
  /* Solving LUX = Pe, in order to calculate the inverse of 'A'. Here, 'e' is a column
   * vector of the identity matrix of size 'size-1'. Solving for all 'e'. */
-    for(i=0; i<size; i++)
+    for(i=1; i<size; i++)
      {
     //Storing elements of the i-th column of the identity matrix in i-th row of 'B'.
-      for(j =0; j<size; j++) B[i][j] = 0;
-      B[i][i] =0;
+      for(j = 1; j<size; j++) B[i][j] = 0;
+      B[i][i] = 1;
 
    //Solving Ly = Pb.
-     for(n=0; n<size; n++)
+     for(n=1; n<size; n++)
        {
         t = 0;
-        for(m=0; m<=n-1; m++) t += LU[n][m]*Y[m];
+        for(m=1; m<=n-1; m++) t += LU[n][m]*Y[m];
         Y[n] = B[i][P[n]]-t;
        }
 
    //Solving Ux = y.
-     for(n=size-1; n>=0; n--)
+     for(n=size-1; n>=1; n--)
        {
         t = 0;
         for(m = n+1; m < size; m++) t += LU[n][m]*X[m];
         X[n] = (Y[n]-t)/LU[n][n];
        }//Now, X contains the solution.
 
-      for(j =0; j<size; j++) B[i][j] = X[j]; //Copying 'X' into the same row of 'B'.
+      for(j = 1; j<size; j++) B[i][j] = X[j]; //Copying 'X' into the same row of 'B'.
      } //Now, 'B' the transpose of the inverse of 'A'.
 
  /* Copying transpose of 'B' into 'LU', which would the inverse of 'A'. */
-    for(i=0; i<size; i++) for(j=0; j<size; j++) LU[i][j] = B[j][i];
+    for(i=1; i<size; i++) for(j=1; j<size; j++) LU[i][j] = B[j][i];
 
     return 0;
    }
