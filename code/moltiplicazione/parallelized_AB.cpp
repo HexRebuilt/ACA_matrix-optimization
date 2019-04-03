@@ -7,11 +7,11 @@
 #include <omp.h>
 
 using namespace std;
-#define SIZE 350
+#define SIZE 2000
 #define MAXNUMBER 10
 #define MINNUMBER 0
  
-void showMatrix(float matrix[SIZE][SIZE]){
+void showMatrix(float **matrix){
     cout << "\n";
     for(int i=0; i <SIZE;i++ ){
         for(int j=0; j< SIZE; j++){
@@ -22,7 +22,7 @@ void showMatrix(float matrix[SIZE][SIZE]){
     }
 }
 
-void create_Matrix (float random[SIZE][SIZE],int number){
+void create_Matrix (float **random,int number){
     
     int i, j;
     int range = MAXNUMBER - MINNUMBER;
@@ -36,10 +36,12 @@ void create_Matrix (float random[SIZE][SIZE],int number){
     }
 }
 
-void multiply(float a[SIZE][SIZE], float b[SIZE][SIZE]){
+void multiply(float **a, float **b){
     //the program will work only on square matrices
-    float results[SIZE][SIZE]={0};
-
+    float **results = (float **)malloc(SIZE * sizeof(float*));
+    for(int i = 0; i < SIZE; i++){
+        results[i] = (float *)malloc(SIZE * sizeof(float));    
+    }
     //multiply a*b
         #pragma omp parallelforschedule (static)
         {
@@ -54,8 +56,17 @@ void multiply(float a[SIZE][SIZE], float b[SIZE][SIZE]){
 int main(void){
     double time= omp_get_wtime();
 	int i,j,n = SIZE;
-	float a[SIZE][SIZE], b[SIZE][SIZE], at[SIZE][SIZE], bt[SIZE][SIZE], deterA, deterB;
-	create_Matrix(a,1);
+	//float a[SIZE][SIZE], b[SIZE][SIZE], at[SIZE][SIZE], bt[SIZE][SIZE];
+    float **a = (float **)malloc(SIZE * sizeof(float*));
+    float **b = (float **)malloc(SIZE * sizeof(float*));
+    
+    for(int i = 0; i < SIZE; i++){
+        a[i] = (float *)malloc(SIZE * sizeof(float));
+        b[i] = (float *)malloc(SIZE * sizeof(float));
+    }
+    
+    
+    create_Matrix(a,1);
     //cout << "\nMatrix A:\n";
     //showMatrix(a);
     create_Matrix(b,2);
