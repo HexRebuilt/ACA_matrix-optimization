@@ -31,6 +31,7 @@
 # include <float.h>
 # include <math.h>
 # include <stdlib.h>
+# include <omp.h>
 
 
 
@@ -44,7 +45,7 @@
 
 
 
-# define	N	2000 //Size of the to-be-inverted N x N square matrix 'A'.
+# define	N	500 //Size of the to-be-inverted N x N square matrix 'A'.
 
 
 /* This function performs LUP decomposition of the to-be-inverted matrix 'A'. It is
@@ -73,12 +74,12 @@ int main(){
     float **A = (float **)malloc((N+1) * sizeof(float*));
     float **A1 = (float **)malloc((N+1) * sizeof(float*));
     float **I = (float **)malloc((N+1) * sizeof(float*));
-    
-    for(int i = 1; i < (N+1); i++){
-        A[i] = (float *)malloc((N+1) * sizeof(float));
-        A1[i] = (float *)malloc((N+1) * sizeof(float));
-        I[i] = (float *)malloc((N+1) * sizeof(float));
-    }
+    #pragma omp parallel for
+      for(int i = 1; i < (N+1); i++){
+          A[i] = (float *)malloc((N+1) * sizeof(float));
+          A1[i] = (float *)malloc((N+1) * sizeof(float));
+          I[i] = (float *)malloc((N+1) * sizeof(float));
+      }
 
   /* Its i-th row shows the position of '1' in the i-th row of the pivot that is used
   * when performing the LUP decomposition of A. The rest of the elements in that row of
@@ -89,23 +90,26 @@ int main(){
     float **B = (float **)malloc((N+1) * sizeof(float*));
     float *X = (float *)malloc((N+1) * sizeof(float*));
     float *Y = (float *)malloc((N+1) * sizeof(float*));
-    
+  
+  #pragma omp parallel for  
     for(int i = 1; i < (N+1); i++)
         B[i] = (float *)malloc((N+1) * sizeof(float));
 
 
   /* Defining the to-be-inverted matrix, A. A1 would be used later to test the inverted
   * matrix. */
+  #pragma omp parallel for
     for(i = 1; i <= N; i++) for(j = 1; j <= N; j++)
       A[i][j] = A1[i][j] = sin(i*j*j+i)*2;
 
+  double time = omp_get_wtime();
 
   /* Performing LUP-decomposition of the matrix 'A'. If successful, the 'U' is stored in
   * its upper diagonal, and the 'L' is stored in the remaining traigular space. Note that
   * all the diagonal elements of 'L' are 1, which are not stored. */
     if(LUPdecompose(N+1, A, P) < 0) return -1;
-    printf("\n\nThe LUP decomposition of 'A' is successful.\nPivot:\n");
-    for(i = 1; i <= N; i++)
+    printf("\n\nThe LUP decomposition of 'A' is successful.");
+    /*for(i = 1; i <= N; i++)
         {
       for(j = 1; j <= N; j++) printf("\t%d", j == P[i] ? 1:0);
       printf("\n");
@@ -118,30 +122,34 @@ int main(){
         for(j = 1; j <= N; j++) printf("\t%E", (float)A[i][j]);
         printf("\n");
       }
+      */
 
   /* Inverting the matrix based on the LUP decomposed A. The inverse is returned through
   * the matrix 'A' itself. */
     if(LUPinverse(N+1, P, A, B, X, Y) < 0) return -1;
-    printf("\n\nMatrix inversion successful.\nInverse of A:\n");
-    for(j = 1; j <= N; j++)
+    printf("\n\nMatrix inversion successful.");
+    /*for(j = 1; j <= N; j++)
         {
         for(i = 1; i <= N; i++) printf("\t%E", (float)A[i][j]);
         printf("\n");
         }
+        */
 
   /* Multiplying the inverse-of-A (stored in A) with A (stored in A1). The product is
   * stored in 'I'. Ideally, 'I' should be a perfect identity matrix. */
-    for(i=1; i <= N; i++) for(j = 1; j <= N; j++)
+    /*for(i=1; i <= N; i++) for(j = 1; j <= N; j++)
       for(I[i][j] = 0, k = 1; k <= N; k++) I[i][j] += A[i][k]*A1[k][j];
-
-    printf("\nProduct of the calculated inverse-of-A with A:\n");
-    for(i = 1; i <= N; i++)
+  /*
+    //printf("\nProduct of the calculated inverse-of-A with A:\n");
+    /*for(i = 1; i <= N; i++)
       {
         for(j = 1; j <= N; j++) printf("\t%E", (float)I[i][j]);
         printf("\n");
       }
     printf("\n");
-
+  */
+  time = omp_get_wtime()- time;
+  printf("\nExecution time: %f",time);
     return 0;
 }
 
