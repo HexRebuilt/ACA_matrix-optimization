@@ -30,32 +30,27 @@
 # include <stdio.h>
 # include <float.h>
 # include <math.h>
+# include <stdlib.h>
+
+
 
 /* The following header file contains a 128 bit float data type '__float128',
  * used for high-precision calculations. This data-type is available only in the
  * GCC version 4.6 or later. In order to enable high-precision calculations,
- * uncomment the following line, followed by type-defining 'sankhya' appropriately
+ * uncomment the following line, followed by type-defining 'float' appropriately
  * and including an additional '-lquadmath' flag during the compilation.
  * * */
 //# include <quadmath.h>
 
 
-/* The following type-define can be used to change the precision of the calculation.
- * Possible values:
- *   'float'		- for least precision
- *   'double'		- for medium precision
- *   '__float128'	- for highest precision
- * * */
-typedef  	double  	sankhya;
 
-
-# define	N	100 //Size of the to-be-inverted N x N square matrix 'A'.
+# define	N	2000 //Size of the to-be-inverted N x N square matrix 'A'.
 
 
 /* This function performs LUP decomposition of the to-be-inverted matrix 'A'. It is
  * defined after the function 'main()'.
  * * */
-static int LUPdecompose(int size, sankhya A[size][size], int P[size]);
+static int LUPdecompose(int size, float **A, int *P);
 
 /* This function calculates inverse of the matrix A. It accepts the LUP decomposed
  * matrix through 'LU' and the corresponding pivot through 'P'. The inverse is
@@ -63,8 +58,8 @@ static int LUPdecompose(int size, sankhya A[size][size], int P[size]);
  * merely to facilitate the computation. This function is defined after the function
  * 'LUPdecompose()'.
  * * */
-static int LUPinverse(int size, int P[size], sankhya LU[size][size],\
-                      sankhya B[size][size], sankhya X[size], sankhya Y[size]);
+static int LUPinverse(int size, int *P, float **LU,\
+                      float **B, float *X, float *Y);
 
 
 int main(){
@@ -74,26 +69,36 @@ int main(){
   * 'I = inverse(A).A1'. Ideally, 'I' should be a perfect identity matrix. 'I' is
   * used to check the quality of the calculated inverse. The quality increases as
   * we use 'float', 'double', and '__float128', respectively. */
-    sankhya A[N+1][N+1], A1[N+1][N+1], I[N+1][N+1];
+    //float A[N+1][N+1], A1[N+1][N+1], I[N+1][N+1];
+    float **A = (float **)malloc((N+1) * sizeof(float*));
+    float **A1 = (float **)malloc((N+1) * sizeof(float*));
+    float **I = (float **)malloc((N+1) * sizeof(float*));
+    
+    for(int i = 1; i < (N+1); i++){
+        A[i] = (float *)malloc((N+1) * sizeof(float));
+        A1[i] = (float *)malloc((N+1) * sizeof(float));
+        I[i] = (float *)malloc((N+1) * sizeof(float));
+    }
 
   /* Its i-th row shows the position of '1' in the i-th row of the pivot that is used
   * when performing the LUP decomposition of A. The rest of the elements in that row of
   * the pivot would be zero. In this program, we call this array 'P' a 'permutation'. */
-    int P[N+1];
+    int *P= (int *)malloc((N+1) * sizeof(int));
 
-    sankhya B[N+1][N+1], X[N+1], Y[N+1]; //Temporaty spaces.
+    //float B[N+1][N+1], X[N+1], Y[N+1]; //Temporaty spaces.
+    float **B = (float **)malloc((N+1) * sizeof(float*));
+    float *X = (float *)malloc((N+1) * sizeof(float*));
+    float *Y = (float *)malloc((N+1) * sizeof(float*));
+    
+    for(int i = 1; i < (N+1); i++)
+        B[i] = (float *)malloc((N+1) * sizeof(float));
+
 
   /* Defining the to-be-inverted matrix, A. A1 would be used later to test the inverted
   * matrix. */
     for(i = 1; i <= N; i++) for(j = 1; j <= N; j++)
       A[i][j] = A1[i][j] = sin(i*j*j+i)*2;
 
-    printf("\n\nThe to-be-inverted matrix 'A':\n");
-    for(i = 1; i <= N; i++)
-      {
-        for(j = 1; j <= N; j++) printf("\t%E", (float)A[i][j]);
-        printf("\n");
-      }
 
   /* Performing LUP-decomposition of the matrix 'A'. If successful, the 'U' is stored in
   * its upper diagonal, and the 'L' is stored in the remaining traigular space. Note that
@@ -146,10 +151,10 @@ int main(){
 /* This function decomposes the matrix 'A' into L, U, and P. If successful,
  * the L and the U are stored in 'A', and information about the pivot in 'P'.
  * The diagonal elements of 'L' are all 1, and therefore they are not stored. */
-static int LUPdecompose(int size, sankhya A[size][size], int P[size])
+static int LUPdecompose(int size, float **A, int *P)
    {
     int i, j, k, kd = 0, T;
-    sankhya p, t;
+    float p, t;
 
  /* Finding the pivot of the LUP decomposition. */
     for(i=1; i<size; i++) P[i] = i; //Initializing.
@@ -203,11 +208,11 @@ static int LUPdecompose(int size, sankhya A[size][size], int P[size])
 /* This function calculates the inverse of the LUP decomposed matrix 'LU' and pivoting
  * information stored in 'P'. The inverse is returned through the matrix 'LU' itselt.
  * 'B', X', and 'Y' are used as temporary spaces. */
-static int LUPinverse(int size, int P[size], sankhya LU[size][size],\
-                      sankhya B[size][size], sankhya X[size], sankhya Y[size])
+static int LUPinverse(int size, int *P, float **LU,\
+                      float **B, float *X, float *Y)
    {
     int i, j, n, m;
-    sankhya t;
+    float t;
 
   //Initializing X and Y.
     for(n=1; n<size; n++) X[n] = Y[n] = 0;
