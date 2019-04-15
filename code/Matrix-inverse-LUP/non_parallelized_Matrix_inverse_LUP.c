@@ -45,7 +45,7 @@
 
 
 
-# define	N	500 //Size of the to-be-inverted N x N square matrix 'A'.
+# define	N	2000 //Size of the to-be-inverted N x N square matrix 'A'.
 
 
 /* This function performs LUP decomposition of the to-be-inverted matrix 'A'. It is
@@ -98,7 +98,7 @@ int main(){
 
   /* Defining the to-be-inverted matrix, A. A1 would be used later to test the inverted
   * matrix. */
-  #pragma omp parallel for
+  //#pragma omp parallel for
     for(i = 1; i <= N; i++) for(j = 1; j <= N; j++)
       A[i][j] = A1[i][j] = sin(i*j*j+i)*2;
 
