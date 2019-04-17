@@ -171,15 +171,15 @@ int main(void){
     create_Matrix(a,1);
     cout << "\nMatrix A:\n";
     showMatrix(a);
-    cout << "\nPivoting matrix:\n";
-    showMatrix(p);
+    //cout << "\nPivoting matrix:\n";
+    //showMatrix(p);
     double time= omp_get_wtime();
     
     /**
      * P*a = l*u and LUx =p
      * where p is the column to pivot of the b matrix and x is a column of the inverse
     */
-    cout << "\nPivoting....\n";
+    //cout << "\nPivoting....\n";
     pivoting(a,p);
 
     /**cout << "\nMatrix A:\n";
