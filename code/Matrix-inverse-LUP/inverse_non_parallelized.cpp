@@ -7,7 +7,7 @@
 #include <omp.h>
 
 using namespace std;
-#define SIZE 5
+#define SIZE 3
 #define MAXNUMBER 50
 #define MINNUMBER 0
  
@@ -31,7 +31,7 @@ void create_Matrix (float **random,int number){
     #pragma omp parallel for collapse(2)
         for(i = 0; i <SIZE; i++)
             for(j = 0; j< SIZE; j++)
-                random[i][j] = rand() %(range);
+                random[i][j] = rand() %(range)+i*j;
 }
 
 void lu(float **a, float **l, float **u){
@@ -70,8 +70,7 @@ void pivoting(float **a, float **p){
     for (int k = 0; k < SIZE-1; k++){   
         int imax = 0;
         //foreach column i need to find which row has the maximum (in module) value
-        for (int j = k; j < SIZE; j++)
-        {
+        for (int j = k; j < SIZE; j++){
             //finding the maximum
             if (abs(a[j][k]) > abs(a[imax][k])){
                 imax = j;
@@ -83,21 +82,21 @@ void pivoting(float **a, float **p){
         swap(a[k],a[imax]);
         swap(p[k],p[imax]);
     }
-
-
-    
 }
 
 void forwardSubst(float **l, float **p, float *y, int column){
     /**
      * solving yi=Pi/ sum of Lrow-i
     */
-    y[0]=p[0][column] /l[0][0];
+    //y[0]=p[0][column] /l[0][0];
+    //cout<< "\nColumn:"<<column;
 
     for(int i=0; i< SIZE; i++){
         y[i] = p[i][column];
+        //cout <<"\ni: "<<i;
         for (int j = 0; j < i; j++)
         {
+            //cout<<"\tj: "<<j;
             //the P[i] part has been done before
             y[i] = y[i] - l[i][j]*y[i-1] ;
         }
@@ -107,17 +106,22 @@ void forwardSubst(float **l, float **p, float *y, int column){
 
 void backwardSubst(float **u, float *y, float **a1, int column){
     /**
-     * solving A^-1i=Pi/ sum of Lrow-i
+     * solving A^-1 [i] = P[i]/sum of Lrow-i
     */
-    a1[SIZE-1][column] = y[SIZE-1]/u[SIZE-1][SIZE-1];
-
+    //a1[SIZE-1][column] = y[SIZE-1]/u[SIZE-1][SIZE-1];
+    //cout<< "\ncolumn "<<column<<"\nA1 "<<a1[SIZE-1][column];
+    //cout<< "\nColumn:"<<column;
+    a1[SIZE-1][column] = y[SIZE-1];
     for(int i= SIZE-1; i >= 0; i--){
-        y[i] = a1[i][column];
+        //a1[i][column] = y[i];
+        //cout <<"\ni: "<<i;
+
         for (int j = SIZE-1; j > i; j--)
         {
-            y[i] = y[i] - u[i][j]*y[i-1] ;
+            //cout<<"\tj: "<<j;
+            a1[i][column] = y[i] - u[i][j]*a1[j][column] ;
         }
-        y[i] = y[i]/u[i][i];
+        a1[i][column] = a1[i][column]/u[i][i]; 
     }
 }
 
@@ -161,6 +165,13 @@ int main(void){
         for(int i = 0; i < SIZE; i++)
             for(int j = 0; j < SIZE; j++)
                 p[i][j] = 0;
+
+    #pragma omp parallel for collapse(2)
+        for(int i = 0; i < SIZE; i++)
+            for(int j = 0; j < SIZE; j++)
+                a1[i][j] = -10;
+
+
     #pragma omp parallel
         for(int i = 0; i < SIZE; i++){
             p[i][i] = 1;
@@ -168,7 +179,7 @@ int main(void){
         }
     
     
-    create_Matrix(a,1);
+    create_Matrix(a,10);
     cout << "\nMatrix A:\n";
     showMatrix(a);
     //cout << "\nPivoting matrix:\n";
