@@ -7,7 +7,7 @@
 #include <omp.h>
 
 using namespace std;
-#define SIZE 4
+#define SIZE 2000
 #define MAXNUMBER 50
 #define MINNUMBER 0
  
@@ -180,7 +180,7 @@ int main(void){
     
     create_Matrix(a,10);
     cout << "\nMatrix A:\n";
-    showMatrix(a);
+    //showMatrix(a);
     //cout << "\nPivoting matrix:\n";
     //showMatrix(p);
     double time= omp_get_wtime();
@@ -240,7 +240,7 @@ int main(void){
     findInverse(a_p,a1,l,u,p);
     
     cout<< "\nMatrix a^-1:\n";
-    showMatrix(a1);
+    //showMatrix(a1);
 
     time = omp_get_wtime()-time;
     cout << "\nExecution time: "<< time << "\n\n";
