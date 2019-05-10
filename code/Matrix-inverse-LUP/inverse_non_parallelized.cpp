@@ -7,7 +7,7 @@
 #include <omp.h>
 
 using namespace std;
-#define SIZE 2000
+#define SIZE 500
 #define MAXNUMBER 50
 #define MINNUMBER 0
  
