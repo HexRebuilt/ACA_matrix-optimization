@@ -7,15 +7,15 @@
 #include <omp.h>
 
 using namespace std;
-#define SIZE 1500
-#define THREADNUMB 1
+//#define SIZE 1500
+//#define THREADNUMB 1
 #define MAXNUMBER 50
 #define MINNUMBER 0
  
-void showMatrix(float **matrix){
+void showMatrix(float **matrix, int size){
     cout << "\n";
-    for(int i=0; i <SIZE;i++ ){
-        for(int j=0; j< SIZE; j++){
+    for(int i=0; i <size;i++ ){
+        for(int j=0; j< size; j++){
             cout << matrix[i][j];
             cout << "\t";
         }
@@ -23,7 +23,7 @@ void showMatrix(float **matrix){
     }
 }
 
-void create_Matrix (float **random,int number){
+void create_Matrix (float **random, int size){
     
     int i, j;
     int range = MAXNUMBER - MINNUMBER;
@@ -31,32 +31,32 @@ void create_Matrix (float **random,int number){
     srand(time(NULL));
     //srand(0);
     //#pragma omp parallel for collapse(2)
-        for(i = 0; i <SIZE; i++)
-            for(j = 0; j< SIZE; j++)
-                random[i][j] = rand() %(range)+i*j;
+        for(i = 0; i <size; i++)
+            for(j = 0; j< size; j++)
+                random[i][j] = rand() %(range);
 }
 
-void lu(float **a, float **l, float **u){
+void lu(float **a, float **l, float **u, int size){
     int i = 0, j = 0, k = 0;
     
-    for (k = 0; k < SIZE; k++){
-        for (i = k+1; i < SIZE; i++){
+    for (k = 0; k < size; k++){
+        for (i = k+1; i < size; i++){
                 l[i][k] = u[i][k] / u[k][k];
-                for (j = k; j < SIZE; j++){
+                for (j = k; j < size; j++){
                     u[i][j] = u[i][j] - l[i][k] * u[k][j];
                 }
             }
         }
 }
 
-void pivoting(float **a, float **p){
+void pivoting(float **a, float **p, int size){
     
     //#pragma omp parallel for //performance decreases
-    for (int k = 0; k < SIZE-1; k++){   
+    for (int k = 0; k < size-1; k++){   
         int imax = 0;
         //foreach column i need to find which row has the maximum (in module) value
         //#pragma omp parallel for
-            for (int j = k; j < SIZE; j++){
+            for (int j = k; j < size; j++){
             //finding the maximum
             if (abs(a[j][k]) > abs(a[imax][k])){
                 imax = j;
@@ -71,7 +71,7 @@ void pivoting(float **a, float **p){
     }
 }
 
-void forwardSubst(float **l, float **p, float *y, int column){
+void forwardSubst(float **l, float **p, float *y, int column, int size){
     /**
      * solving yi=Pi/ sum of Lrow-i
     */
@@ -79,7 +79,7 @@ void forwardSubst(float **l, float **p, float *y, int column){
     //cout<< "\nColumn:"<<column;
 
 	y[0] = p[0][column] / l[0][0];
-    for(int i = 1; i< SIZE; i++){
+    for(int i = 1; i< size; i++){
         y[i] = p[i][column];
         //cout <<"\ni: "<<i;
         for (int j = 0; j < i; j++)
@@ -92,19 +92,19 @@ void forwardSubst(float **l, float **p, float *y, int column){
     }
 }
 
-void backwardSubst(float **u, float *y, float **a1, int column){
+void backwardSubst(float **u, float *y, float **a1, int column, int size){
     /**
      * solving A^-1 [i] = P[i]/sum of Lrow-i
     */
-    //a1[SIZE-1][column] = y[SIZE-1]/u[SIZE-1][SIZE-1];
-    //cout<< "\ncolumn "<<column<<"\nA1 "<<a1[SIZE-1][column];
+    //a1[size-1][column] = y[size-1]/u[size-1][size-1];
+    //cout<< "\ncolumn "<<column<<"\nA1 "<<a1[size-1][column];
     //cout<< "\nColumn:"<<column;
-    a1[SIZE-1][column] = y[SIZE-1] / u[SIZE-1][SIZE-1];
-    for(int i= SIZE-2; i >= 0; i--){
+    a1[size-1][column] = y[size-1] / u[size-1][size-1];
+    for(int i= size-2; i >= 0; i--){
         //a1[i][column] = y[i];
         //cout <<"\ni: "<<i;
 
-        for (int j = SIZE-1; j > i; j--)
+        for (int j = size-1; j > i; j--)
         {
             //cout<<"\tj: "<<j;
             a1[i][column] = a1[i][column] - u[i][j]*a1[j][column] ;
@@ -113,7 +113,7 @@ void backwardSubst(float **u, float *y, float **a1, int column){
     }
 }
 
-void findInverse(float **a, float **a1, float **l, float **u, float **p){
+void findInverse(float **a, float **a1, float **l, float **u, float **p, int size){
     /**
      * foreach column i solve the system LUai=Pi with the i-th column
      * by using the forward substitution method
@@ -123,57 +123,49 @@ void findInverse(float **a, float **a1, float **l, float **u, float **p){
 
     //i can only parallelize this, so i can do each column indipendentily
     #pragma omp parallel for 
-    for(int i=0; i< SIZE; i++){
-        //float *y = (float *)malloc(SIZE * sizeof(float*));
+    for(int i=0; i< size; i++){
+        //float *y = (float *)malloc(size * sizeof(float*));
         //y = yi;
-        float* y = new float[SIZE]();
-        forwardSubst(l,p,y,i);
-        backwardSubst(u,y,a1,i);
+        float* y = new float[size]();
+        forwardSubst(l,p,y,i,size);
+        backwardSubst(u,y,a1,i,size);
     }
 
 }
 
-void multiply(float **a, float **b, float **r){
-    //the program will work only on square matrices
-    //multiply a*b
-    #pragma omp parallel for 
-        for(int i = 0; i < SIZE; i++)
-            for(int j = 0; j < SIZE; j++)
-                for(int k = 0; k < SIZE; k++)
-                    r[i][j] = r[i][j] + a[i][k]*b[k][j];
-    //showMatrix(results);
-}
 
-
-int main(void){
-    omp_set_num_threads(THREADNUMB);
+int main(int argc,char **argv){
+        
+    // the first arg is the size of the matrix and the second one is the thread number
+    int size = atoi(argv[1]);
+    omp_set_num_threads(atoi(argv[2]));
 
     int i, j;
-	float **a = (float **)malloc(SIZE * sizeof(float*));
-    float **l = (float **)malloc(SIZE * sizeof(float*));
-    float **u = (float **)malloc(SIZE * sizeof(float*));
-    float **p = (float **)malloc(SIZE * sizeof(float*));
-    float **r = (float **)malloc(SIZE * sizeof(float*));
-    float **a1 = (float **)malloc(SIZE * sizeof(float*));
-    //float *y = (float *)malloc(SIZE * sizeof(float*)); 
+	float **a = (float **)malloc(size * sizeof(float*));
+    float **l = (float **)malloc(size * sizeof(float*));
+    float **u = (float **)malloc(size * sizeof(float*));
+    float **p = (float **)malloc(size * sizeof(float*));
+    float **r = (float **)malloc(size * sizeof(float*));
+    float **a1 = (float **)malloc(size * sizeof(float*));
+    //float *y = (float *)malloc(size * sizeof(float*)); 
     
-    float **a_p = (float **)malloc(SIZE * sizeof(float*));
+    float **a_p = (float **)malloc(size * sizeof(float*));
     
     #pragma omp parallel for 
-    for(int i = 0; i < SIZE; i++){
-        a[i] = (float *)malloc(SIZE * sizeof(float));
-        a1[i] = (float *)malloc(SIZE * sizeof(float));
-        l[i] = (float *)malloc(SIZE * sizeof(float));
-        u[i] = (float *)malloc(SIZE * sizeof(float));
-        p[i] = (float *)malloc(SIZE * sizeof(float));
-        r[i] = (float *)malloc(SIZE * sizeof(float));
-        a_p[i] = (float *)malloc(SIZE * sizeof(float));
+    for(int i = 0; i < size; i++){
+        a[i] = (float *)malloc(size * sizeof(float));
+        a1[i] = (float *)malloc(size * sizeof(float));
+        l[i] = (float *)malloc(size * sizeof(float));
+        u[i] = (float *)malloc(size * sizeof(float));
+        p[i] = (float *)malloc(size * sizeof(float));
+        r[i] = (float *)malloc(size * sizeof(float));
+        a_p[i] = (float *)malloc(size * sizeof(float));
     }
     // create the identity pivot matrix
     #pragma omp parallel for
-        for(int i = 0; i < SIZE; i++) {
+        for(int i = 0; i < size; i++) {
             p[i][i] = 1;
-            for(int j = 0; j < SIZE; j++) {
+            for(int j = 0; j < size; j++) {
                 a1[i][j] = 0;
                 r[i][j] = 0;
 
@@ -185,7 +177,7 @@ int main(void){
 
     
     
-    create_Matrix(a,10);
+    create_Matrix(a,size);
     cout << "\nMatrix A:\n";
     //showMatrix(a);
     //cout << "\nPivoting matrix:\n";
@@ -193,9 +185,9 @@ int main(void){
     double time= omp_get_wtime();
     
     #pragma omp parallel for   
-    for (i = 0; i < SIZE; i++) {
+    for (i = 0; i < size; i++) {
         l[i][i] = 1;
-        for (j = 0; j < SIZE; j++) {
+        for (j = 0; j < size; j++) {
             a_p[i][j] = a[i][j];
 
             if (i != j)
@@ -208,11 +200,11 @@ int main(void){
      * where p is the column to pivot of the b matrix and x is a column of the inverse
     */
     //cout << "\nPivoting....\n";
-    pivoting(a_p,p);
+    pivoting(a_p,p,size);
     
     #pragma omp parallel for
-    for (i = 0; i < SIZE; i++)
-        for (j = 0; j < SIZE; j++)
+    for (i = 0; i < size; i++)
+        for (j = 0; j < size; j++)
             u[i][j] = a_p[i][j];
 
     /**cout << "\nMatrix A:\n";
@@ -220,7 +212,7 @@ int main(void){
     cout << "\nPivoting matrix:\n";
     showMatrix(p);
     */
-    lu(a_p,l,u);
+    lu(a_p,l,u,size);
      
     /* TEST LU
     // /**
@@ -234,8 +226,8 @@ int main(void){
     showMatrix(r);
     
     
-    for (i = 0; i < SIZE; i++)
-        for (j = 0; j < SIZE; j++)
+    for (i = 0; i < size; i++)
+        for (j = 0; j < size; j++)
             r[i][j] = 0;
     */
 
@@ -246,7 +238,7 @@ int main(void){
     * of the inverse to find
     */
     cout << "\nFinding the inverse...";
-    findInverse(a_p,a1,l,u,p);
+    findInverse(a_p,a1,l,u,p,size);
     
     cout<< "\nMatrix a^-1:\n";
     //showMatrix(a1);
@@ -257,5 +249,11 @@ int main(void){
     //multiply(a,a1,r);
     //showMatrix(r);
     getch();
+    free(a);
+    free(a_p);
+    free(a1);
+    free(l);
+    free(u);
+    free(p);
     return 0;
 }
