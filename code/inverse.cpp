@@ -3,7 +3,6 @@
 #include <iostream>
 #include <time.h>
 #include <math.h>
-#include <conio.h>
 #include <omp.h>
 
 using namespace std;
