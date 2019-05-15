@@ -94,13 +94,13 @@ int main(){
     int threadcount[]={1,2,4,6,8,12,24};
     double avgtime;
     //int size = atoi(argv[1]);
-    for (int i = 0; i < sizeof(threadcount); i++)
+    for (int i = 0; i < _countof(threadcount); i++)
     {
-        cout<<"\n\nThreads: "<<threadcount[i]<<"\tTime AVG: \n";
-        for (int j = 0; j < sizeof(dimension); j++)
+        cout<<"\n\nThreads: "<<threadcount[i]<<"\nSize:\tTime AVG:\n";
+        for (int j = 0; j < _countof(dimension); j++)
         {
             avgtime = 0; //reinitilize it
-            cout<<"Size: "<<dimension[j]<<"|\t";
+            cout<<dimension[j]<<"\t";
 
             for (int k =1; k <= 5; k++){
                 avgtime = avgtime + execution(dimension[j],threadcount[i]);
