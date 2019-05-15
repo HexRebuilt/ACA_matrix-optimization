@@ -133,12 +133,8 @@ void findInverse(float **a, float **a1, float **l, float **u, float **p, int siz
 
 }
 
-
-int main(int argc,char **argv){
-        
-    // the first arg is the size of the matrix and the second one is the thread number
-    int size = atoi(argv[1]);
-    omp_set_num_threads(atoi(argv[2]));
+double execution (int size,int threadcount){
+    omp_set_num_threads(threadcount);
 
     int i, j;
 	float **a = (float **)malloc(size * sizeof(float*));
@@ -178,7 +174,7 @@ int main(int argc,char **argv){
     
     
     create_Matrix(a,size);
-    cout << "\nMatrix A:\n";
+    //cout << "\nMatrix A:\n";
     //showMatrix(a);
     //cout << "\nPivoting matrix:\n";
     //showMatrix(p);
@@ -237,23 +233,47 @@ int main(int argc,char **argv){
     * solving the system LUxi=Pi where i is the column and x is the column
     * of the inverse to find
     */
-    cout << "\nFinding the inverse...";
+    //cout << "\nFinding the inverse...";
     findInverse(a_p,a1,l,u,p,size);
     
-    cout<< "\nMatrix a^-1:\n";
+    //cout<< "\nMatrix a^-1:\n";
     //showMatrix(a1);
 
     time = omp_get_wtime()-time;
-    cout << "\nExecution time: "<< time << "\n\n";
+    //cout << "\nExecution time: "<< time << "\n\n";
     
     //multiply(a,a1,r);
     //showMatrix(r);
-    getch();
     free(a);
     free(a_p);
     free(a1);
     free(l);
     free(u);
     free(p);
+    return time;
+}
+
+int main(int argc,char **argv){
+        
+
+    int dimension[]={500,1000,1500,2000,2500,3000};
+    int threadcount[]={1,2,4,6,8,12,24};
+    double avgtime;
+    //int size = atoi(argv[1]);
+    for (int i = 0; i < sizeof(threadcount); i++)
+    {
+        cout<<"\n\nThreads: "<<threadcount[i]<<"\tTime AVG: \n";
+        for (int j = 0; j < sizeof(dimension); j++)
+        {
+            avgtime = 0; //reinitilize it
+            cout<<"Size: "<<dimension[j]<<"|\t";
+
+            for (int k =1; k <= 5; k++){
+                avgtime = avgtime + execution(dimension[j],threadcount[i]);
+            }
+            avgtime = avgtime/5.0F;
+            cout<<avgtime<<"\n";
+        }
+    }
     return 0;
 }

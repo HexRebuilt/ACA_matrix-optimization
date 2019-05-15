@@ -3,7 +3,6 @@
 #include <iostream>
 #include <time.h>
 #include <math.h>
-#include <conio.h>
 #include <omp.h>
 
 using namespace std;
@@ -11,7 +10,7 @@ using namespace std;
 
 //#define THREADNUMB 1
 
-#define MAXNUMBER 10
+#define MAXNUMBER 100
 #define MINNUMBER 0
  
 void showMatrix(float **matrix, int size){
@@ -49,10 +48,9 @@ void multiply(float **a, float **b, float **r, int size){
     //showMatrix(results);
 }
 
-int main(int argc,char **argv){
-    // the first arg is the size of the matrix and the second one is the thread number
-    int size = atoi(argv[1]);
-    omp_set_num_threads(atoi(argv[2]));
+double execution (int size, int threads){
+
+    omp_set_num_threads(threads);
 
     int i,j;
 	//float a[size][size], b[size][size], at[size][size], bt[size][size];
@@ -78,14 +76,41 @@ int main(int argc,char **argv){
     create_Matrix(b, size);
     //cout << "\nMatrix B:\n";
     //showMatrix(b);
-    cout << "\n\nA * B =\n";
+    //cout << "\n\nA * B =\n";
     double time= omp_get_wtime();
     multiply(a,b,r, size);
     time = omp_get_wtime()-time;
-    cout << "\nExecution time: "<< time;
-    getch();
+    //cout << "\nExecution time: "<< time;
     free(a);
     free(b);
     free(r);
+    return time;
+}
+
+int main(){
+    // the first arg is the size of the matrix and the second one is the thread number
+
+    int dimension[]={500,1000,1500,2000,2500,3000};
+    int threadcount[]={1,2,4,6,8,12,24};
+    double avgtime;
+    //int size = atoi(argv[1]);
+    for (int i = 0; i < sizeof(threadcount); i++)
+    {
+        cout<<"\n\nThreads: "<<threadcount[i]<<"\tTime AVG: \n";
+        for (int j = 0; j < sizeof(dimension); j++)
+        {
+            avgtime = 0; //reinitilize it
+            cout<<"Size: "<<dimension[j]<<"|\t";
+
+            for (int k =1; k <= 5; k++){
+                avgtime = avgtime + execution(dimension[j],threadcount[i]);
+            }
+            avgtime = avgtime/5.0F;
+            cout<<avgtime<<"\n";
+        }
+    }
+    
     return 0;
 }
+
+
