@@ -54,7 +54,7 @@ void pivoting(float **a, float **p, int size){
     for (int k = 0; k < size-1; k++){   
         int imax = 0;
         //foreach column i need to find which row has the maximum (in module) value
-        //#pragma omp parallel for
+        //#pragma omp parallel for //will decreas performances
             for (int j = k; j < size; j++){
             //finding the maximum
             if (abs(a[j][k]) > abs(a[imax][k])){
@@ -123,8 +123,6 @@ void findInverse(float **a, float **a1, float **l, float **u, float **p, int siz
     //i can only parallelize this, so i can do each column indipendentily
     #pragma omp parallel for 
     for(int i=0; i< size; i++){
-        //float *y = (float *)malloc(size * sizeof(float*));
-        //y = yi;
         float* y = new float[size]();
         forwardSubst(l,p,y,i,size);
         backwardSubst(u,y,a1,i,size);

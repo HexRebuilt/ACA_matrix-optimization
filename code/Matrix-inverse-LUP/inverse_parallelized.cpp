@@ -7,8 +7,8 @@
 #include <omp.h>
 
 using namespace std;
-#define SIZE 1500
-#define THREADNUMB 1
+#define SIZE 3000
+#define THREADNUMB 24
 #define MAXNUMBER 50
 #define MINNUMBER 0
  
