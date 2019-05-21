@@ -138,7 +138,7 @@ double execution (int size,int threadcount){
     float **l = (float **)malloc(size * sizeof(float*));
     float **u = (float **)malloc(size * sizeof(float*));
     float **p = (float **)malloc(size * sizeof(float*));
-    float **r = (float **)malloc(size * sizeof(float*));
+    //float **r = (float **)malloc(size * sizeof(float*));
     float **a1 = (float **)malloc(size * sizeof(float*));
     //float *y = (float *)malloc(size * sizeof(float*)); 
     
@@ -151,7 +151,7 @@ double execution (int size,int threadcount){
         l[i] = (float *)malloc(size * sizeof(float));
         u[i] = (float *)malloc(size * sizeof(float));
         p[i] = (float *)malloc(size * sizeof(float));
-        r[i] = (float *)malloc(size * sizeof(float));
+        //r[i] = (float *)malloc(size * sizeof(float));
         a_p[i] = (float *)malloc(size * sizeof(float));
     }
     // create the identity pivot matrix
@@ -160,7 +160,7 @@ double execution (int size,int threadcount){
             p[i][i] = 1;
             for(int j = 0; j < size; j++) {
                 a1[i][j] = 0;
-                r[i][j] = 0;
+                //r[i][j] = 0;
 
                 if (i != j) {
                     p[i][j] = 0;
@@ -241,12 +241,12 @@ double execution (int size,int threadcount){
     
     //multiply(a,a1,r);
     //showMatrix(r);
-    free(a);
-    free(a_p);
-    free(a1);
-    free(l);
-    free(u);
-    free(p);
+    free(*a);
+    free(*a_p);
+    free(*a1);
+    free(*l);
+    free(*u);
+    free(*p);
     return time;
 }
 
