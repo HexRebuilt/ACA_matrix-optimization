@@ -253,7 +253,7 @@ int main(int argc,char **argv){
         
 
     int dimension[]={2000,4000,6000,8000,10000,20000};
-    int threadcount[]={1,2,4,6,8,12,24};
+    int threadcount[]={1,2,4,8,16,24,32};
     double avgtime;
 	ofstream outfile;
 	outfile.open("Test_results_inverse.txt");
