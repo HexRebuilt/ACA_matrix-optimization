@@ -1,13 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <fstream>
 #include <time.h>
 #include <math.h>
 #include <omp.h>
 
 using namespace std;
-//#define SIZE 1500
-//#define THREADNUMB 1
 #define MAXNUMBER 50
 #define MINNUMBER 0
  
@@ -253,23 +252,27 @@ double execution (int size,int threadcount){
 int main(int argc,char **argv){
         
 
-    int dimension[]={500,1000,1500,2000,2500,3000};
+    int dimension[]={2000,4000,6000,8000,10000,20000};
     int threadcount[]={1,2,4,6,8,12,24};
     double avgtime;
+	ofstream outfile;
+	outfile.open("Test_results_inverse.txt");
     //int size = atoi(argv[1]);
     for (int i = 0; i < 7; i++)
     {
         cout<<"\n\nThreads: "<<threadcount[i]<<"\nSize:\tTime AVG:\n";
+		outfile << <<"\n\nThreads: " << threadcount[i] << "\nSize:\tTime AVG:\n";
         for (int j = 0; j < 6; j++)
         {
             avgtime = 0; //reinitilize it
             cout<<dimension[j]<<"\t";
-
+			outfile << dimension[j] << "\t";
             for (int k =1; k <= 5; k++){
                 avgtime = avgtime + execution(dimension[j],threadcount[i]);
             }
             avgtime = avgtime/5.0F;
             cout<<avgtime<<"\n";
+			outfile << avgtime << "\n";
         }
     }
     return 0;
