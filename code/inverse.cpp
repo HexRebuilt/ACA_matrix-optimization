@@ -275,5 +275,6 @@ int main(int argc,char **argv){
 			outfile << avgtime << "\n";
         }
     }
+	outfile.close;
     return 0;
 }

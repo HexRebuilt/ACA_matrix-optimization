@@ -113,6 +113,7 @@ int main(){
 			outfile << avgtime << "\n";
 		}
 	}
+	outfile.close;
 	return 0;
 }
 
