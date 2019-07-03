@@ -271,8 +271,8 @@ int main(int argc,char **argv){
 				avgtime = execution(dimension[j], threadcount[i]);//avgtime + execution(dimension[j],threadcount[i]);
             //}
             //avgtime = avgtime/5.0F;
-            cout<<avgtime.00F<<"\n";
-			outfile << avgtime.00F << "\n";
+            cout<<avgtime<<"\n";
+			outfile << avgtime << "\n";
         }
     }
 	outfile.close();
