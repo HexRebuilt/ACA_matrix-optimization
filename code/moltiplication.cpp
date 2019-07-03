@@ -99,21 +99,21 @@ int main(){
 	for (int i = 0; i < 7; i++)
 	{
 		cout << "\n\nThreads: " << threadcount[i] << "\nSize:\tTime AVG:\n";
-		outfile << <<"\n\nThreads: " << threadcount[i] << "\nSize:\tTime AVG:\n";
+		outfile <<"\n\nThreads: " << threadcount[i] << "\nSize:\tTime AVG:\n";
 		for (int j = 0; j < 6; j++)
 		{
 			avgtime = 0; //reinitilize it
 			cout << dimension[j] << "\t";
 			outfile << dimension[j] << "\t";
-			for (int k = 1; k <= 5; k++) {
-				avgtime = avgtime + execution(dimension[j], threadcount[i]);
-			}
-			avgtime = avgtime / 5.0F;
-			cout << avgtime << "\n";
-			outfile << avgtime << "\n";
+			//for (int k = 1; k <= 5; k++) {
+			avgtime = execution(dimension[j], threadcount[i]); //avgtime + execution(dimension[j], threadcount[i]);
+			//}
+			//avgtime = avgtime / 5.0F;
+			cout << avgtime.00F << "\n";
+			outfile << avgtime.00F << "\n";
 		}
 	}
-	outfile.close;
+	outfile.close();
 	return 0;
 }
 
