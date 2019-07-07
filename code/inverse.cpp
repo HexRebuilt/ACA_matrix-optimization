@@ -28,7 +28,6 @@ void create_Matrix (float **random, int size){
     //srand(static_cast<unsigned>(time(0))+number); 
     srand(time(NULL));
     //srand(0);
-    //#pragma omp parallel for collapse(2)
         for(i = 0; i <size; i++)
             for(j = 0; j< size; j++)
                 random[i][j] = rand() %(range);
@@ -49,11 +48,10 @@ void lu(float **a, float **l, float **u, int size){
 
 void pivoting(float **a, float **p, int size){
     
-    //#pragma omp parallel for //performance decreases
+    //#pragma omp parallel for //performance decreases because of the memory conflict that if not managed produces a wrong output
     for (int k = 0; k < size-1; k++){   
         int imax = 0;
         //foreach column i need to find which row has the maximum (in module) value
-        //#pragma omp parallel for //will decreas performances
             for (int j = k; j < size; j++){
             //finding the maximum
             if (abs(a[j][k]) > abs(a[imax][k])){

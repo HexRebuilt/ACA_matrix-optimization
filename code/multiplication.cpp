@@ -31,7 +31,6 @@ void create_Matrix (float **random, int size){
     int range = MAXNUMBER - MINNUMBER;
     srand(static_cast<unsigned>(time(0))); 
     //srand(time(NULL));
-    //#pragma omp parallel for 
         for(i = 0; i <size; i++)
             for(j = 0; j< size; j++)
                 random[i][j] = rand() %(range);
